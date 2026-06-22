@@ -197,6 +197,7 @@
         #quiz-box {
             max-width: 640px;
             width: 100%;
+            min-height: 360px;
             background: var(--panel-bg);
             padding: 35px;
             border-radius: 12px;
@@ -204,6 +205,9 @@
             text-align: center;
             box-sizing: border-box;
             position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
         #article-tag {
@@ -411,6 +415,7 @@
             #main-panel { padding: 15px 5px; }
             #choices-area { grid-template-columns: 1fr 1fr; }
             .minimap-list { grid-template-columns: repeat(8, 1fr); }
+            #quiz-box { min-height: 420px; padding: 25px 20px; }
         }
     </style>
 </head>
@@ -647,6 +652,13 @@
             choicesArea.style.display = 'grid';
             flashOverlay.classList.remove('show');
             flashOverlay.classList.remove('retry');
+
+            // オーバーレイ表示中にスクロール位置がズレることがあるため、
+            // 次の問題に進むタイミングで画面内に戻す
+            const quizBox = document.getElementById('quiz-box');
+            if (quizBox) {
+                quizBox.scrollIntoView({ block: 'center', behavior: 'auto' });
+            }
         }
 
         function nextQuestion() {
