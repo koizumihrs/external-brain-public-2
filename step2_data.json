@@ -1,0 +1,57 @@
+[
+  {
+    "id": 1,
+    "chapter": 1,
+    "chapterName": "第1章 総則",
+    "article": "6条1項",
+    "statement": "代表者又は管理人の定めがある法人でない社団は、自己の名をもって訂正審判を請求することができる。",
+    "isCorrect": false,
+    "explanation": "法人でない社団等は、訂正審判を請求することはできません（できるとする点が誤り）。",
+    "source": "第6条第1項",
+    "errorPattern": "効果の反転"
+  },
+  {
+    "id": 2,
+    "chapter": 1,
+    "chapterName": "第1章 総則",
+    "article": "7条4項",
+    "statement": "被保佐人が、他人が請求した特許無効審判に関する手続をするには、保佐人の同意が必要である。",
+    "isCorrect": false,
+    "explanation": "「他人が請求した」審判等の手続であれば、保佐人の同意は不要です。",
+    "source": "第7条第4項",
+    "errorPattern": "効果の反転"
+  },
+  {
+    "id": 3,
+    "chapter": 1,
+    "chapterName": "第1章 総則",
+    "article": "8条2項",
+    "statement": "在外者の特許管理人は、特別の授権を得なければ、特許権の放棄をすることができない。",
+    "isCorrect": false,
+    "explanation": "在外者の特許管理人は、原則として特許に関する一切の手続を代理できるため、特別の授権は不要です（国内に住所を有する者の任意代理人の規定と混同）。",
+    "source": "第8条第2項",
+    "errorPattern": "主体の誤り"
+  },
+  {
+    "id": 4,
+    "chapter": 1,
+    "chapterName": "第1章 総則",
+    "article": "9条",
+    "statement": "国内に住所を有する者の委任による代理人は、特別の授権がなくとも、出願公開の請求をすることができる。",
+    "isCorrect": false,
+    "explanation": "国内に住所を有する者の委任代理人が出願公開の請求をするには、特別の授権が必要です。",
+    "source": "第9条",
+    "errorPattern": "効果の反転"
+  },
+  {
+    "id": 5,
+    "chapter": 1,
+    "chapterName": "第1章 総則",
+    "article": "11条",
+    "statement": "手続をする者の委任による代理人の代理権は、本人の死亡によって消滅する。",
+    "isCorrect": false,
+    "explanation": "特許法上、委任による代理人の代理権は本人の死亡によって消滅しません（民法の原則と混同）。",
+    "source": "第11条",
+    "errorPattern": "近接・類似条文との混同"
+  }
+]
