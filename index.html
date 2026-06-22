@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>特許法 条文理解トレーナー（ステップ2・○×版）</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#00ADB5">
+    <link rel="icon" href="icon-192.png">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="条文○×トレーナー">
+    <style>
+        :root {
+            --bg-color: #121212;
+            --panel-bg: #1e1e1e;
+            --text-color: #e0e0e0;
+            --text-muted: #777777;
+            --accent-color: #00ADB5;
+            --correct-color: #00ffcc;
+            --wrong-color: #ff4d4d;
+            --choice-bg: #2a2a2a;
+            --choice-hover: #3a3a3a;
+            --flash-bg-correct: rgba(0, 173, 181, 0.95);
+            --flash-bg-retry: rgba(255, 77, 77, 0.9);
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', sans-serif;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #sidebar {
+            width: 340px;
+            background-color: var(--panel-bg);
+            border-right: 1px solid #2d2d2d;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            box-sizing: border-box;
+            height: 100vh;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        h2 {
+            font-size: 0.95rem;
+            margin-top: 0;
+            border-left: 3px solid var(--accent-color);
+            padding-left: 8px;
+            margin-bottom: 12px;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .control-block {
+            margin-bottom: 25px;
+        }
+
+        .control-toggle {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            user-select: none;
+        }
+
+        .control-toggle input {
+            margin-right: 10px;
+        }
+
+        .mode-selector {
+            display: flex;
+            background: #121212;
+            border-radius: 6px;
+            padding: 2px;
+            margin-bottom: 8px;
+        }
+
+        .mode-btn {
+            flex: 1;
+            text-align: center;
+            padding: 8px 4px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s;
+            font-weight: bold;
+            color: var(--text-muted);
+        }
+
+        .mode-btn.active {
+            background-color: var(--accent-color);
+            color: #fff;
+        }
+
+        .mode-desc {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        #minimap-container {
+            flex-grow: 1;
+        }
+
+        .minimap-chapter {
+            margin-bottom: 15px;
+        }
+
+        .minimap-chapter-title {
+            font-size: 0.75rem;
+            font-weight: bold;
+            color: var(--accent-color);
+            margin-bottom: 6px;
+        }
+
+        .minimap-list {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 4px;
+        }
+
+        .minimap-item {
+            font-size: 0.7rem;
+            background: #151515;
+            padding: 6px 2px;
+            text-align: center;
+            border-radius: 3px;
+            color: var(--text-muted);
+            transition: all 0.15s ease;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            border: 1px solid transparent;
+            position: relative;
+        }
+
+        .minimap-item.active {
+            color: #aaa;
+            border-color: #333;
+            cursor: default;
+        }
+
+        .minimap-item.correct {
+            background-color: #fff !important;
+            color: #000 !important;
+            font-weight: bold;
+            box-shadow: 0 0 8px rgba(255,255,255,0.7);
+        }
+
+        .minimap-item.mastered {
+            background-color: var(--accent-color) !important;
+            color: #fff !important;
+            font-weight: bold;
+            box-shadow: 0 0 10px rgba(0, 173, 181, 0.8);
+        }
+
+        .minimap-item .tooltip {
+            display: none;
+            position: absolute;
+            bottom: 110%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #000;
+            color: #fff;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            white-space: nowrap;
+            z-index: 20;
+            pointer-events: none;
+        }
+        .minimap-item:hover .tooltip {
+            display: block;
+        }
+
+        #main-panel {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+        }
+
+        #quiz-box {
+            max-width: 640px;
+            width: 100%;
+            background: var(--panel-bg);
+            padding: 35px;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+            text-align: center;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        #article-tag {
+            display: inline-block;
+            font-size: 0.75rem;
+            color: var(--accent-color);
+            border: 1px solid var(--accent-color);
+            border-radius: 12px;
+            padding: 3px 12px;
+            margin-bottom: 18px;
+            letter-spacing: 0.5px;
+        }
+
+        #question-display {
+            font-size: 1.35rem;
+            font-weight: bold;
+            color: #ffffff;
+            margin-bottom: 28px;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1.6;
+            text-align: left;
+        }
+
+        #choices-area {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            width: 100%;
+        }
+
+        .choice-btn {
+            background-color: var(--choice-bg);
+            border: 1px solid #3e3e3e;
+            color: #fff;
+            font-size: 1.2rem;
+            padding: 18px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.1s ease;
+            outline: none;
+            font-weight: bold;
+        }
+
+        .choice-btn:hover {
+            background-color: var(--choice-hover);
+            border-color: #555;
+        }
+
+        .choice-btn.correct {
+            background-color: #fff !important;
+            border-color: #fff !important;
+            color: #000 !important;
+        }
+
+        .choice-btn.wrong {
+            background-color: transparent !important;
+            border-color: var(--wrong-color) !important;
+            color: var(--wrong-color) !important;
+            opacity: 0.5;
+        }
+
+        #reason-check-area {
+            display: none;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #333;
+        }
+
+        #reason-prompt {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 14px;
+        }
+
+        #reason-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .reason-btn {
+            flex: 1;
+            max-width: 220px;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            cursor: pointer;
+            border: 1px solid #3e3e3e;
+            background: var(--choice-bg);
+            color: #fff;
+            transition: all 0.1s ease;
+        }
+
+        .reason-btn:hover {
+            background-color: var(--choice-hover);
+        }
+
+        .reason-btn.yes {
+            border-color: var(--accent-color);
+        }
+
+        .reason-btn.no {
+            border-color: var(--wrong-color);
+        }
+
+        #flash-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--flash-bg-correct);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 25px;
+            box-sizing: border-box;
+            z-index: 10;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.15s ease-in-out;
+            text-align: left;
+        }
+
+        #flash-overlay.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        #flash-overlay.retry {
+            background-color: var(--flash-bg-retry);
+        }
+
+        #flash-status {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #000;
+            background: #fff;
+            padding: 4px 14px;
+            border-radius: 4px;
+            margin-bottom: 14px;
+            align-self: center;
+        }
+
+        #flash-explanation {
+            font-size: 1.05rem;
+            font-weight: bold;
+            color: #ffffff;
+            line-height: 1.6;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+            margin-bottom: 14px;
+        }
+
+        #flash-source {
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.85);
+            margin-bottom: 18px;
+        }
+
+        #flash-next-btn {
+            align-self: center;
+            padding: 10px 28px;
+            border-radius: 20px;
+            border: 2px solid #fff;
+            background: transparent;
+            color: #fff;
+            font-weight: bold;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        #flash-next-btn:hover {
+            background: rgba(255,255,255,0.15);
+        }
+
+        #toast {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--accent-color);
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 4px;
+            font-weight: bold;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+
+        #toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 768px) {
+            body { flex-direction: column; overflow: auto; height: auto; }
+            #sidebar { width: 100%; height: auto; border-right: none; border-bottom: 1px solid #2d2d2d; }
+            #main-panel { padding: 15px 5px; }
+            #choices-area { grid-template-columns: 1fr 1fr; }
+            .minimap-list { grid-template-columns: repeat(8, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="sidebar">
+        <div class="control-block">
+            <h2>難易度モード</h2>
+            <div class="mode-selector">
+                <div id="mode-quick-btn" class="mode-btn active" onclick="setDifficulty('QUICK')">○×だけ</div>
+                <div id="mode-reason-btn" class="mode-btn" onclick="setDifficulty('REASON')">理由まで</div>
+            </div>
+            <div class="mode-desc" id="mode-desc-text">○×を判定したらすぐ正解発表。サクサク回したいときに。</div>
+        </div>
+
+        <div class="control-block">
+            <h2>章 フィルター</h2>
+            <div id="chapter-filter-container"></div>
+        </div>
+
+        <div class="control-block">
+            <h2>利用時間</h2>
+            <div id="today-time-display" style="font-size: 1.3rem; font-weight: bold; color: #fff; margin-bottom: 8px;">0.0分</div>
+            <div style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 4px;">直近の履歴</div>
+            <div id="time-history-list" style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 10px;"></div>
+            <button id="export-log-btn" style="width: 100%; padding: 8px; background: var(--accent-color); border: none; border-radius: 4px; color: #fff; font-size: 0.8rem; font-weight: bold; cursor: pointer;">ログをダウンロード(.md)</button>
+        </div>
+
+        <h2>問題ミニマップ</h2>
+        <div id="minimap-container"></div>
+    </div>
+
+    <div id="main-panel">
+        <div id="toast">🎉 章をクリア！</div>
+
+        <div id="quiz-box">
+            <div id="flash-overlay">
+                <div id="flash-status">○</div>
+                <div id="flash-explanation">説明文がここに入ります。</div>
+                <div id="flash-source">根拠条文</div>
+                <button id="flash-next-btn" onclick="nextQuestion()">次の問題 →</button>
+            </div>
+
+            <div id="article-tag">第1条</div>
+            <div id="question-display">Loading...</div>
+
+            <div id="choices-area">
+                <button class="choice-btn" data-value="true">○ 正しい</button>
+                <button class="choice-btn" data-value="false">× 誤り</button>
+            </div>
+
+            <div id="reason-check-area">
+                <div id="reason-prompt">「どこがどう正しい/誤りか」、根拠条文まで含めて理由を言えましたか？</div>
+                <div id="reason-buttons">
+                    <button class="reason-btn yes" onclick="confirmReason(true)">言えた</button>
+                    <button class="reason-btn no" onclick="confirmReason(false)">言えなかった</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== 音声フィードバック（Web Audio API） =====
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playSound(type) {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            const now = audioCtx.currentTime;
+
+            if (type === 'correct') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(600, now);
+                osc.frequency.setValueAtTime(800, now + 0.05);
+                gain.gain.setValueAtTime(0.1, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+                osc.start(now); osc.stop(now + 0.2);
+            } else if (type === 'wrong') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(180, now);
+                gain.gain.setValueAtTime(0.15, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.2);
+                osc.start(now); osc.stop(now + 0.2);
+            }
+        }
+
+        // ===== 状態管理 =====
+        let stepData = [];
+        let difficulty = "QUICK";
+        let activeChapters = new Set();
+        let masteredIds = new Set(JSON.parse(localStorage.getItem('step2_masteredIds') || '[]'));
+        let correctOnceIds = new Set();
+        let currentQuestion = null;
+        let questionQueue = [];
+        let pendingJudgement = null;
+
+        function saveMastered() {
+            localStorage.setItem('step2_masteredIds', JSON.stringify([...masteredIds]));
+        }
+
+        const articleTag = document.getElementById('article-tag');
+        const questionDisplay = document.getElementById('question-display');
+        const choicesArea = document.getElementById('choices-area');
+        const choiceBtns = document.querySelectorAll('.choice-btn');
+        const reasonCheckArea = document.getElementById('reason-check-area');
+        const minimapContainer = document.getElementById('minimap-container');
+        const chapterFilterContainer = document.getElementById('chapter-filter-container');
+        const toast = document.getElementById('toast');
+        const flashOverlay = document.getElementById('flash-overlay');
+        const flashStatus = document.getElementById('flash-status');
+        const flashExplanation = document.getElementById('flash-explanation');
+        const flashSource = document.getElementById('flash-source');
+        const modeDescText = document.getElementById('mode-desc-text');
+
+        const MODE_DESCRIPTIONS = {
+            QUICK: "○×を判定したらすぐ正解発表。サクサク回したいときに。",
+            REASON: "○×判定の後、理由（どこが・なぜ）を自分で言えたか確認。言えなければ再挑戦扱いに。"
+        };
+
+        async function loadData() {
+            try {
+                const response = await fetch('step2_data.json');
+                if (!response.ok) throw new Error('JSONの読み込みに失敗しました');
+                stepData = await response.json();
+                activeChapters = new Set([...new Set(stepData.map(d => d.chapter))]);
+                initGame();
+            } catch (error) {
+                questionDisplay.innerText = "データ読み込みエラー";
+                choicesArea.style.display = 'none';
+                console.error(error);
+            }
+        }
+
+        function setDifficulty(mode) {
+            difficulty = mode;
+            document.getElementById('mode-quick-btn').classList.toggle('active', mode === 'QUICK');
+            document.getElementById('mode-reason-btn').classList.toggle('active', mode === 'REASON');
+            modeDescText.innerText = MODE_DESCRIPTIONS[mode];
+            generateQueue();
+            nextQuestion();
+        }
+
+        function initGame() {
+            renderChapterFilter();
+            renderMinimap();
+            generateQueue();
+            nextQuestion();
+
+            choiceBtns.forEach(btn => {
+                btn.addEventListener('click', () => handleJudgement(btn));
+            });
+        }
+
+        function renderChapterFilter() {
+            chapterFilterContainer.innerHTML = '';
+            const chapters = [...new Set(stepData.map(d => d.chapter))].sort((a, b) => a - b);
+            chapters.forEach(ch => {
+                const chName = stepData.find(d => d.chapter === ch).chapterName;
+                const label = document.createElement('label');
+                label.className = 'control-toggle';
+                const input = document.createElement('input');
+                input.type = 'checkbox';
+                input.checked = true;
+                input.addEventListener('change', (e) => {
+                    if (e.target.checked) activeChapters.add(ch); else activeChapters.delete(ch);
+                    renderMinimap(); generateQueue(); nextQuestion();
+                });
+                label.appendChild(input);
+                label.appendChild(document.createTextNode(chName));
+                chapterFilterContainer.appendChild(label);
+            });
+        }
+
+        function renderMinimap() {
+            minimapContainer.innerHTML = '';
+            const chapters = [...new Set(stepData.map(d => d.chapter))].sort((a, b) => a - b);
+            chapters.forEach(ch => {
+                if (!activeChapters.has(ch)) return;
+                const chData = stepData.filter(d => d.chapter === ch);
+                const chBox = document.createElement('div');
+                chBox.className = 'minimap-chapter';
+                chBox.appendChild(Object.assign(document.createElement('div'), {
+                    className: 'minimap-chapter-title',
+                    innerText: chData[0].chapterName
+                }));
+
+                const list = document.createElement('div');
+                list.className = 'minimap-list';
+
+                chData.forEach((item, idx) => {
+                    const el = document.createElement('div');
+                    el.className = 'minimap-item active';
+                    el.id = `map-q-${item.id}`;
+                    el.innerText = String(idx + 1);
+
+                    const tooltip = document.createElement('div');
+                    tooltip.className = 'tooltip';
+                    tooltip.innerText = `第${item.source || item.article}`;
+                    el.appendChild(tooltip);
+
+                    if (masteredIds.has(item.id)) {
+                        el.classList.add('mastered');
+                    } else if (correctOnceIds.has(item.id)) {
+                        el.classList.add('correct');
+                    }
+                    list.appendChild(el);
+                });
+                chBox.appendChild(list);
+                minimapContainer.appendChild(chBox);
+            });
+        }
+
+        function generateQueue() {
+            let availableData = stepData.filter(d => activeChapters.has(d.chapter));
+
+            if (difficulty === 'REASON') {
+                availableData = availableData.filter(d => !masteredIds.has(d.id));
+            }
+
+            for (let i = availableData.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [availableData[i], availableData[j]] = [availableData[j], availableData[i]];
+            }
+            questionQueue = availableData;
+        }
+
+        function resetButtonsUI() {
+            choiceBtns.forEach(btn => { btn.className = 'choice-btn'; btn.disabled = false; });
+            reasonCheckArea.style.display = 'none';
+            choicesArea.style.display = 'grid';
+            flashOverlay.classList.remove('show');
+            flashOverlay.classList.remove('retry');
+        }
+
+        function nextQuestion() {
+            resetButtonsUI();
+            pendingJudgement = null;
+
+            if (activeChapters.size === 0) {
+                questionDisplay.innerText = "章を選択してください。";
+                choicesArea.style.display = 'none';
+                return;
+            }
+
+            if (questionQueue.length === 0) {
+                generateQueue();
+                if (questionQueue.length === 0) {
+                    questionDisplay.innerText = "この章はすべて習熟済みです！🎉";
+                    choicesArea.style.display = 'none';
+                    return;
+                }
+            }
+
+            currentQuestion = questionQueue.shift();
+            articleTag.innerText = `根拠：第${currentQuestion.source || currentQuestion.article}`;
+            questionDisplay.innerText = currentQuestion.statement;
+        }
+
+        function handleJudgement(selectedBtn) {
+            if (!currentQuestion) return;
+            const selectedVal = selectedBtn.dataset.value === 'true';
+            const correctVal = currentQuestion.isCorrect;
+            const isRight = (selectedVal === correctVal);
+
+            choiceBtns.forEach(btn => { btn.disabled = true; });
+            selectedBtn.classList.add(isRight ? 'correct' : 'wrong');
+            playSound(isRight ? 'correct' : 'wrong');
+
+            pendingJudgement = isRight;
+
+            if (difficulty === 'QUICK') {
+                finalizeQuestion(isRight, /*fullyCleared=*/ isRight);
+            } else {
+                choicesArea.style.display = 'none';
+                reasonCheckArea.style.display = 'block';
+            }
+        }
+
+        function confirmReason(reasonOk) {
+            const judgedRight = pendingJudgement === true;
+            finalizeQuestion(judgedRight, judgedRight && reasonOk);
+        }
+
+        function finalizeQuestion(judgedRight, fullyCleared) {
+            reasonCheckArea.style.display = 'none';
+
+            if (fullyCleared) {
+                correctOnceIds.add(currentQuestion.id);
+                masteredIds.add(currentQuestion.id);
+                saveMastered();
+                const mapItem = document.getElementById(`map-q-${currentQuestion.id}`);
+                if (mapItem) { mapItem.classList.remove('correct'); mapItem.classList.add('mastered'); }
+                checkChapterClear();
+            } else {
+                questionQueue.push(currentQuestion);
+                masteredIds.delete(currentQuestion.id);
+                saveMastered();
+                const mapItem = document.getElementById(`map-q-${currentQuestion.id}`);
+                if (mapItem) mapItem.classList.remove('mastered');
+            }
+
+            flashOverlay.classList.toggle('retry', !fullyCleared);
+            flashStatus.innerText = currentQuestion.isCorrect ? '○ 正しい' : '× 誤り';
+            flashExplanation.innerText = currentQuestion.isCorrect
+                ? (currentQuestion.explanation || "この記述は条文の内容と一致しています。")
+                : (currentQuestion.explanation || "誤りの説明なし");
+            flashSource.innerText = `根拠：第${currentQuestion.source || currentQuestion.article}`;
+            choicesArea.style.display = 'none';
+            flashOverlay.classList.add('show');
+        }
+
+        function checkChapterClear() {
+            const ch = currentQuestion.chapter;
+            const chIds = stepData.filter(d => d.chapter === ch).map(d => d.id);
+            const allMastered = chIds.every(id => masteredIds.has(id));
+            if (allMastered) {
+                toast.innerText = `🎉 ${currentQuestion.chapterName} クリア！`;
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 2500);
+            }
+        }
+
+        // ===== 利用時間トラッキング =====
+        function todayKey(d = new Date()) {
+            const tz = d.getTimezoneOffset() * 60000;
+            return new Date(d.getTime() - tz).toISOString().slice(0, 10);
+        }
+
+        function addElapsedTime(ms) {
+            const key = 'step2_studyTime_' + todayKey();
+            const prev = parseInt(localStorage.getItem(key) || '0', 10);
+            localStorage.setItem(key, String(prev + ms));
+        }
+
+        function getMinutesForDate(dateStr) {
+            const ms = parseInt(localStorage.getItem('step2_studyTime_' + dateStr) || '0', 10);
+            return ms / 60000;
+        }
+
+        let trackingStart = null;
+
+        function isPageActive() {
+            return !document.hidden && document.hasFocus();
+        }
+
+        function startTracking() {
+            if (trackingStart === null) trackingStart = Date.now();
+        }
+
+        function stopTracking() {
+            if (trackingStart !== null) {
+                addElapsedTime(Date.now() - trackingStart);
+                trackingStart = null;
+            }
+        }
+
+        function updateTimeDisplay() {
+            const todayMs = parseInt(localStorage.getItem('step2_studyTime_' + todayKey()) || '0', 10);
+            const liveMs = trackingStart !== null ? (Date.now() - trackingStart) : 0;
+            const totalMin = (todayMs + liveMs) / 60000;
+            const display = document.getElementById('today-time-display');
+            if (display) display.innerText = `${totalMin.toFixed(1)}分`;
+        }
+
+        function renderTimeHistory() {
+            const list = document.getElementById('time-history-list');
+            if (!list) return;
+            list.innerHTML = '';
+            for (let i = 1; i <= 6; i++) {
+                const d = new Date();
+                d.setDate(d.getDate() - i);
+                const mins = getMinutesForDate(todayKey(d));
+                const row = document.createElement('div');
+                row.innerText = `${d.getMonth() + 1}/${d.getDate()}: ${mins.toFixed(1)}分`;
+                list.appendChild(row);
+            }
+        }
+
+        function getMondayOfWeek(dateStr) {
+            const d = new Date(dateStr + 'T00:00:00');
+            const day = d.getDay();
+            const diff = (day === 0 ? -6 : 1 - day);
+            d.setDate(d.getDate() + diff);
+            return todayKey(d);
+        }
+
+        function exportTimeLogAsMarkdown() {
+            const entries = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && key.startsWith('step2_studyTime_')) {
+                    const dateStr = key.slice('step2_studyTime_'.length);
+                    const ms = parseInt(localStorage.getItem(key) || '0', 10);
+                    entries.push({ date: dateStr, minutes: ms / 60000 });
+                }
+            }
+
+            if (entries.length === 0) {
+                alert('まだ記録がありません。');
+                return;
+            }
+
+            entries.sort((a, b) => a.date.localeCompare(b.date));
+
+            const weekTotals = new Map();
+            const monthTotals = new Map();
+            entries.forEach(({ date, minutes }) => {
+                const monday = getMondayOfWeek(date);
+                weekTotals.set(monday, (weekTotals.get(monday) || 0) + minutes);
+                const month = date.slice(0, 7);
+                monthTotals.set(month, (monthTotals.get(month) || 0) + minutes);
+            });
+
+            const totalMinutes = entries.reduce((sum, e) => sum + e.minutes, 0);
+
+            let md = `# 特許法トレーナー(ステップ2) 学習時間ログ\n\n`;
+            md += `エクスポート日時: ${new Date().toLocaleString('ja-JP')}\n\n`;
+            md += `合計学習時間: ${totalMinutes.toFixed(1)}分（${entries.length}日分）\n\n`;
+
+            md += `## 月別\n\n| 月 | 分 |\n|---|---|\n`;
+            [...monthTotals.entries()].sort((a, b) => a[0].localeCompare(b[0])).forEach(([month, mins]) => {
+                md += `| ${month} | ${mins.toFixed(1)} |\n`;
+            });
+
+            md += `\n## 週別（月曜始まり）\n\n| 週開始日 | 分 |\n|---|---|\n`;
+            [...weekTotals.entries()].sort((a, b) => a[0].localeCompare(b[0])).forEach(([week, mins]) => {
+                md += `| ${week} | ${mins.toFixed(1)} |\n`;
+            });
+
+            md += `\n## 日別\n\n| 日付 | 分 |\n|---|---|\n`;
+            entries.forEach(({ date, minutes }) => {
+                md += `| ${date} | ${minutes.toFixed(1)} |\n`;
+            });
+
+            const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `step2_studytime_log_${todayKey()}.md`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) stopTracking();
+            else if (isPageActive()) startTracking();
+        });
+        window.addEventListener('focus', () => { if (!document.hidden) startTracking(); });
+        window.addEventListener('blur', stopTracking);
+        window.addEventListener('pagehide', stopTracking);
+        window.addEventListener('beforeunload', stopTracking);
+
+        setInterval(() => {
+            if (trackingStart !== null) {
+                stopTracking();
+                startTracking();
+            }
+            updateTimeDisplay();
+            renderTimeHistory();
+        }, 5000);
+
+        if (isPageActive()) startTracking();
+        updateTimeDisplay();
+        renderTimeHistory();
+
+        const exportBtn = document.getElementById('export-log-btn');
+        if (exportBtn) exportBtn.addEventListener('click', exportTimeLogAsMarkdown);
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('service-worker.js').catch(console.error);
+            });
+        }
+
+        window.onload = loadData;
+    </script>
+</body>
+</html>
