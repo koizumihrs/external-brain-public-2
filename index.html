@@ -498,19 +498,22 @@
             }
         }
 
+        // sourceやarticleの先頭に既に「第」があればそのまま、なければ付与する
+        function formatSourceLabel(question) {
+            const raw = question.source || question.article || '';
+            const str = String(raw);
+            return str.startsWith('第') ? str : `第${str}`;
+        }
+
         // ===== 状態管理 =====
         let stepData = [];
         let difficulty = "QUICK";
         let activeChapters = new Set();
-        let masteredIds = new Set(JSON.parse(localStorage.getItem('step2_masteredIds') || '[]'));
+        let masteredIds = new Set(); // セッション内(リロードでリセット)のみで保持
         let correctOnceIds = new Set();
         let currentQuestion = null;
         let questionQueue = [];
         let pendingJudgement = null;
-
-        function saveMastered() {
-            localStorage.setItem('step2_masteredIds', JSON.stringify([...masteredIds]));
-        }
 
         const articleTag = document.getElementById('article-tag');
         const questionDisplay = document.getElementById('question-display');
@@ -666,7 +669,7 @@
             }
 
             currentQuestion = questionQueue.shift();
-            articleTag.innerText = `根拠：第${currentQuestion.source || currentQuestion.article}`;
+            articleTag.innerText = `根拠：${formatSourceLabel(currentQuestion)}`;
             questionDisplay.innerText = currentQuestion.statement;
         }
 
@@ -697,20 +700,26 @@
 
         function finalizeQuestion(judgedRight, fullyCleared) {
             reasonCheckArea.style.display = 'none';
+            const mapItem = document.getElementById(`map-q-${currentQuestion.id}`);
 
-            if (fullyCleared) {
-                correctOnceIds.add(currentQuestion.id);
-                masteredIds.add(currentQuestion.id);
-                saveMastered();
-                const mapItem = document.getElementById(`map-q-${currentQuestion.id}`);
-                if (mapItem) { mapItem.classList.remove('correct'); mapItem.classList.add('mastered'); }
-                checkChapterClear();
+            if (difficulty === 'QUICK') {
+                // ○×だけモード：判定が合っていれば「correct」表示のみ。masteredIdsは変更しない
+                if (judgedRight) {
+                    correctOnceIds.add(currentQuestion.id);
+                    if (mapItem && !masteredIds.has(currentQuestion.id)) mapItem.classList.add('correct');
+                }
             } else {
-                questionQueue.push(currentQuestion);
-                masteredIds.delete(currentQuestion.id);
-                saveMastered();
-                const mapItem = document.getElementById(`map-q-${currentQuestion.id}`);
-                if (mapItem) mapItem.classList.remove('mastered');
+                // 理由までモード：判定+理由の両方が揃って初めてmastered
+                if (fullyCleared) {
+                    correctOnceIds.add(currentQuestion.id);
+                    masteredIds.add(currentQuestion.id);
+                    if (mapItem) { mapItem.classList.remove('correct'); mapItem.classList.add('mastered'); }
+                    checkChapterClear();
+                } else {
+                    questionQueue.push(currentQuestion);
+                    masteredIds.delete(currentQuestion.id);
+                    if (mapItem) mapItem.classList.remove('mastered');
+                }
             }
 
             flashOverlay.classList.toggle('retry', !fullyCleared);
@@ -718,7 +727,7 @@
             flashExplanation.innerText = currentQuestion.isCorrect
                 ? (currentQuestion.explanation || "この記述は条文の内容と一致しています。")
                 : (currentQuestion.explanation || "誤りの説明なし");
-            flashSource.innerText = `根拠：第${currentQuestion.source || currentQuestion.article}`;
+            flashSource.innerText = `根拠：${formatSourceLabel(currentQuestion)}`;
             choicesArea.style.display = 'none';
             flashOverlay.classList.add('show');
         }
