@@ -3,55 +3,310 @@
     "id": 1,
     "chapter": 1,
     "chapterName": "第1章 総則",
-    "article": "6条1項",
-    "statement": "代表者又は管理人の定めがある法人でない社団は、自己の名をもって訂正審判を請求することができる。",
-    "isCorrect": false,
-    "explanation": "法人でない社団等は、訂正審判を請求することはできません（できるとする点が誤り）。",
-    "source": "第6条第1項",
-    "errorPattern": "効果の反転"
+    "article": "2条1項",
+    "statement": "特許法において「発明」とは、自然法則を利用した技術的思想の創作のうち高度のものをいう。",
+    "isCorrect": true,
+    "explanation": "",
+    "source": "第2条第1項"
   },
   {
     "id": 2,
     "chapter": 1,
     "chapterName": "第1章 総則",
-    "article": "7条4項",
-    "statement": "被保佐人が、他人が請求した特許無効審判に関する手続をするには、保佐人の同意が必要である。",
+    "article": "2条3項1号",
+    "statement": "物の発明における「実施」には、その物の生産、使用、譲渡等が含まれるが、輸出をする行為は含まれない。",
     "isCorrect": false,
-    "explanation": "「他人が請求した」審判等の手続であれば、保佐人の同意は不要です。",
-    "source": "第7条第4項",
-    "errorPattern": "効果の反転"
+    "explanation": "物の発明の実施行為に「輸出」は含まれます。",
+    "source": "第2条第3項第1号"
   },
   {
     "id": 3,
     "chapter": 1,
     "chapterName": "第1章 総則",
-    "article": "8条2項",
-    "statement": "在外者の特許管理人は、特別の授権を得なければ、特許権の放棄をすることができない。",
+    "article": "3条1項1号",
+    "statement": "特許法に基づく期間を計算する際、その期間が午前零時から始まるときであっても、原則として初日は算入しない。",
     "isCorrect": false,
-    "explanation": "在外者の特許管理人は、原則として特許に関する一切の手続を代理できるため、特別の授権は不要です（国内に住所を有する者の任意代理人の規定と混同）。",
-    "source": "第8条第2項",
-    "errorPattern": "主体の誤り"
+    "explanation": "期間が午前零時から始まるときは、例外として初日から算入します。",
+    "source": "第3条第1項第1号"
   },
   {
     "id": 4,
     "chapter": 1,
     "chapterName": "第1章 総則",
-    "article": "9条",
-    "statement": "国内に住所を有する者の委任による代理人は、特別の授権がなくとも、出願公開の請求をすることができる。",
+    "article": "4条",
+    "statement": "審判長は、遠隔又は交通不便の地にある者のため、請求により又は職権で、所定の法定期間を延長することができる。",
     "isCorrect": false,
-    "explanation": "国内に住所を有する者の委任代理人が出願公開の請求をするには、特別の授権が必要です。",
-    "source": "第9条",
-    "errorPattern": "効果の反転"
+    "explanation": "法定期間を延長できる主体は審判長ではなく「特許庁長官」です。",
+    "source": "第4条"
   },
   {
     "id": 5,
     "chapter": 1,
     "chapterName": "第1章 総則",
+    "article": "5条1項",
+    "statement": "特許庁長官、審判長又は審査官は、特許法の規定により手続をすべき期間を指定したときは、請求により又は職権で、その期間を延長することができる。",
+    "isCorrect": true,
+    "explanation": "",
+    "source": "第5条第1項"
+  },
+  {
+    "id": 6,
+    "chapter": 1,
+    "chapterName": "第1章 総則",
+    "article": "6条1項",
+    "statement": "代表者又は管理人の定めがある法人でない社団は、自己の名において訂正審判の請求をすることができる。",
+    "isCorrect": false,
+    "explanation": "法人でない社団が自己の名においてできる手続に「訂正審判の請求」は含まれません。",
+    "source": "第6条第1項"
+  },
+  {
+    "id": 7,
+    "chapter": 1,
+    "chapterName": "第1章 総則",
+    "article": "7条1項",
+    "statement": "未成年者は、独立して法律行為をすることができるときであっても、単独で手続をすることができない。",
+    "isCorrect": false,
+    "explanation": "独立して法律行為をすることができる場合は、例外として単独で手続ができます。",
+    "source": "第7条第1項"
+  },
+  {
+    "id": 8,
+    "chapter": 1,
+    "chapterName": "第1章 総則",
+    "article": "8条1項",
+    "statement": "日本国内に住所又は居所を有しない者は、原則として、日本国内に住所等を有する特許管理人によらなければ手続をすることができない。",
+    "isCorrect": true,
+    "explanation": "",
+    "source": "第8条第1項"
+  },
+  {
+    "id": 9,
+    "chapter": 1,
+    "chapterName": "第1章 総則",
+    "article": "9条",
+    "statement": "日本国内に住所又は居所を有する者の委任による代理人は、特許出願の放棄をする場合、特別の授権を得なければならない。",
+    "isCorrect": true,
+    "explanation": "",
+    "source": "第9条"
+  },
+  {
+    "id": 10,
+    "chapter": 1,
+    "chapterName": "第1章 総則",
     "article": "11条",
     "statement": "手続をする者の委任による代理人の代理権は、本人の死亡によって消滅する。",
     "isCorrect": false,
-    "explanation": "特許法上、委任による代理人の代理権は本人の死亡によって消滅しません（民法の原則と混同）。",
-    "source": "第11条",
-    "errorPattern": "近接・類似条文との混同"
+    "explanation": "委任による代理人の代理権は、本人の死亡によって消滅しません。",
+    "source": "第11条"
+  },
+  {
+    "id": 11,
+    "chapter": 1,
+    "chapterName": "第1章 総則",
+    "article": "12条",
+    "statement": "手続をする者の代理人が2人以上あるときは、特許庁に対しては、各人が単独で本人を代理する。",
+    "isCorrect": true,
+    "explanation": "",
+    "source": "第12条"
+  },
+  {
+    "id": 12,
+    "chapter": 1,
+    "chapterName": "第1章 総則",
+    "article": "13条1項",
+    "statement": "審査官は、手続をする者が手続をするのに不適当と認めるときは、その代理人の改任を命ずることができる。",
+    "isCorrect": false,
+    "explanation": "代理人の改任を命ずることができる主体に「審査官」は含まれません。",
+    "source": "第13条第1項"
+  },
+  {
+    "id": 13,
+    "chapter": 1,
+    "chapterName": "第1章 総則",
+    "article": "14条",
+    "statement": "2人以上が共同して手続をしたときは、特許出願の取下げについて、各人が全員を代表する。",
+    "isCorrect": false,
+    "explanation": "特許出願の取下げについては、各人が全員を代表することはできません。",
+    "source": "第14条"
+  },
+  {
+    "id": 14,
+    "chapter": 1,
+    "chapterName": "第1章 総則",
+    "article": "15条",
+    "statement": "在外者の特許権については、特許管理人があるときであっても、常に特許庁の所在地を民事訴訟法上の財産の所在地とみなす。",
+    "isCorrect": false,
+    "explanation": "特許管理人があるときは、その住所又は居所を財産の所在地とみなします。",
+    "source": "第15条"
+  },
+  {
+    "id": 15,
+    "chapter": 1,
+    "chapterName": "第1章 総則",
+    "article": "16条1項",
+    "statement": "手続をする能力がない者がした手続を法定代理人が追認した場合、その手続は、追認をした時から将来に向かって有効となる。",
+    "isCorrect": false,
+    "explanation": "追認された手続は、追認の時ではなく「手続をした時に遡って」有効となります。",
+    "source": "第16条第1項"
+  },
+  {
+    "id": 16,
+    "chapter": 1,
+    "chapterName": "第1章 総則",
+    "article": "17条3項",
+    "statement": "審査官は、手続が特許法等で定める方式に違反している場合、手続の補正をすべきことを命じることができる。",
+    "isCorrect": false,
+    "explanation": "補正を命じる主体は「審査官」ではなく「特許庁長官」です。",
+    "source": "第17条第3項"
+  },
+  {
+    "id": 17,
+    "chapter": 1,
+    "chapterName": "第1章 総則",
+    "article": "17条の21項4号",
+    "statement": "拒絶査定不服審判を請求する場合における明細書等の補正は、その審判請求から30日以内にしなければならない。",
+    "isCorrect": false,
+    "explanation": "補正の時期は「審判請求から30日以内」ではなく「審判の請求と同時」です。",
+    "source": "第17条の2第1項第4号"
+  },
+  {
+    "id": 18,
+    "chapter": 1,
+    "chapterName": "第1章 総則",
+    "article": "17条の23項",
+    "statement": "明細書等について補正をするときは、誤訳訂正書を提出してする場合を除き、願書に最初に添付した明細書等に記載した事項の範囲内においてしなければならない。",
+    "isCorrect": true,
+    "explanation": "",
+    "source": "第17条の2第3項"
+  },
+  {
+    "id": 19,
+    "chapter": 1,
+    "chapterName": "第1章 総則",
+    "article": "17条の3",
+    "statement": "特許出願人は、特許をすべき旨の査定の謄本の送達前であれば、いつでも要約書について補正をすることができる。",
+    "isCorrect": false,
+    "explanation": "要約書の補正ができる期間は「特許をすべき旨の査定の謄本送達前まで」ではなく「経済産業省令で定める期間内に限り」です。",
+    "source": "第17条の3"
+  },
+  {
+    "id": 20,
+    "chapter": 1,
+    "chapterName": "第1章 総則",
+    "article": "17条の53項",
+    "statement": "訂正審判の請求人は、審理の終結の通知がある前に限り、訂正審判の請求書に添付した明細書等について補正をすることができる。",
+    "isCorrect": true,
+    "explanation": "",
+    "source": "第17条の5第3項"
+  },
+  {
+    "id": 21,
+    "chapter": 1,
+    "chapterName": "第1章 総則",
+    "article": "18条1項",
+    "statement": "審査官は、手続の補正命令を受けた者が指定期間内に補正をしない場合、その手続を却下することができる。",
+    "isCorrect": false,
+    "explanation": "却下する主体は「審査官」ではなく「特許庁長官」です。",
+    "source": "第18条第1項"
+  },
+  {
+    "id": 22,
+    "chapter": 1,
+    "chapterName": "第1章 総則",
+    "article": "18条の21項",
+    "statement": "特許庁長官は、不適法な手続であってその補正をすることができないものについては、原則としてその手続を却下するものとする。",
+    "isCorrect": true,
+    "explanation": "",
+    "source": "第18条の2第1項"
+  },
+  {
+    "id": 23,
+    "chapter": 1,
+    "chapterName": "第1章 総則",
+    "article": "18条の22項",
+    "statement": "特許庁長官は、補正不能な不適法な手続を却下しようとするときは、事前の通知なく直ちにその手続を却下することができる。",
+    "isCorrect": false,
+    "explanation": "「事前の通知なく直ちに却下できる」とする点が誤りであり、弁明書を提出する機会を与えなければなりません。",
+    "source": "第18条の2第2項"
+  },
+  {
+    "id": 24,
+    "chapter": 1,
+    "chapterName": "第1章 総則",
+    "article": "19条",
+    "statement": "郵便物の通信日付印により表示された日時のうち、日のみが明瞭であって時刻が明瞭でないときは、表示された日の午後12時に特許庁に到達したものとみなす。",
+    "isCorrect": true,
+    "explanation": "",
+    "source": "第19条"
+  },
+  {
+    "id": 25,
+    "chapter": 1,
+    "chapterName": "第1章 総則",
+    "article": "21条",
+    "statement": "審査官は、特許庁に事件が係属している場合において権利の移転があったときは、その承継人に対して事件に関する手続を続行させることができる。",
+    "isCorrect": false,
+    "explanation": "手続を続行させる主体は「審査官」ではなく「特許庁長官又は審判長」です。",
+    "source": "第21条"
+  },
+  {
+    "id": 26,
+    "chapter": 1,
+    "chapterName": "第1章 総則",
+    "article": "22条",
+    "statement": "特許庁長官又は審判官は、中断した手続の受継の申立てに対する決定を、口頭で行うことができる。",
+    "isCorrect": false,
+    "explanation": "決定の方式は「口頭」ではなく「文書」で行わなければなりません。",
+    "source": "第22条"
+  },
+  {
+    "id": 27,
+    "chapter": 1,
+    "chapterName": "第1章 総則",
+    "article": "23条",
+    "statement": "手続の受継を命じられた者が指定期間内に受継をしないときは、指定期間の経過した日に受継があったものとみなすことができる。",
+    "isCorrect": false,
+    "explanation": "受継があったとみなされる日は「指定期間の経過した日」ではなく「受継を命じた日」です。",
+    "source": "第23条"
+  },
+  {
+    "id": 28,
+    "chapter": 1,
+    "chapterName": "第1章 総則",
+    "article": "24条",
+    "statement": "審査や審判等の手続の中断又は中止については、民事訴訟法における訴訟手続の中断及び中止に関する規定を準用する。",
+    "isCorrect": true,
+    "explanation": "",
+    "source": "第24条"
+  },
+  {
+    "id": 29,
+    "chapter": 1,
+    "chapterName": "第1章 総則",
+    "article": "25条",
+    "statement": "条約に別段の定めがある等の例外を除き、特許権等の権利を享有することができないのは、日本国内に住所又は居所を有しない外国人である。",
+    "isCorrect": true,
+    "explanation": "",
+    "source": "第25条"
+  },
+  {
+    "id": 30,
+    "chapter": 1,
+    "chapterName": "第1章 総則",
+    "article": "26条",
+    "statement": "特許に関し条約に別段の定めがあるときであっても、国内法である特許法の規定が条約よりも優先して適用される。",
+    "isCorrect": false,
+    "explanation": "優先されるのは「特許法」ではなく「条約の規定」です。",
+    "source": "第26条"
+  },
+  {
+    "id": 31,
+    "chapter": 1,
+    "chapterName": "第1章 総則",
+    "article": "27条1項4号",
+    "statement": "仮通常実施権の設定は、特許庁に備える特許原簿に登録する。",
+    "isCorrect": false,
+    "explanation": "特許原簿に登録するのは「仮通常実施権」ではなく「仮専用実施権」等です。",
+    "source": "第27条第1項第4号"
   }
 ]

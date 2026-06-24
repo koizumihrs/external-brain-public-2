@@ -1,0 +1,75 @@
+// API リファレンス：https://www.wix.com/velo/reference/api-overview/introduction
+
+import wixData from 'wix-data';
+import wixLocation from 'wix-location';
+
+$w.onReady(function () {
+
+	// Velo フレームワーク API を使用して Javascript コードをここに書きます
+
+	// Hellow World! を表示:
+	// console.log("Hello World!");
+
+	// ページ要素の関数を呼び出します - 例:
+	// $w("#button1").label = "クリックしてください！";
+
+	//「実行」をクリックするか、サイトをプレビューしてコードを実行します
+
+	// 2025 ボタン
+    $w("#button2025").onClick(() => {
+        $w("#dataset3").setFilter(
+            wixData.filter().eq("newField", 2025)
+        );
+    });
+
+    // 2026 ボタン
+    $w("#button2026").onClick(() => {
+        $w("#dataset3").setFilter(
+            wixData.filter().eq("newField", 2026)
+        );
+    });
+
+    // 2027 ボタン
+    $w("#button2027").onClick(() => {
+        $w("#dataset3").setFilter(
+            wixData.filter().eq("newField", 2027)
+        );
+    });
+
+    // ALL ボタン
+    $w("#buttonAll").onClick(() => {
+        $w("#dataset3").setFilter(
+            wixData.filter()   // ← フィルタなし
+        );
+    });
+
+    $w.onReady(() => {
+        $w('#repeater1').onItemReady(($item, itemData, index) => {
+
+            // 初期状態で非表示
+            $item('#text46').hide();
+            $item('#box1').hide();
+
+            // マウスオーバー
+            $item('#container1').onMouseIn(() => {
+
+                // まず全アイテムをリセット（残留対策）
+                $w('#repeater1').forEachItem(($otherItem) => {
+                    $otherItem('#box1').hide();
+                    $otherItem('#text46').hide();
+                });
+
+                // その上で、このアイテムだけ表示
+                $item('#box1').show("fade", { duration: 200 });
+                $item('#text46').show("fade", { duration: 200 });
+            });
+
+            // マウスアウト
+            $item('#container1').onMouseOut(() => {
+                $item('#box1').hide("fade", { duration: 200 });
+                $item('#text46').hide("fade", { duration: 200 });
+            });
+        });
+    });
+    
+});
