@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>特許法 脳トレ・フラッシュトレーナー (第1章・第2章特化版)</title>
+    <title>特許法 条文理解トレーナー（ステップ2・○×版）</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#00ADB5">
     <link rel="icon" href="icon-192.png">
     <link rel="apple-touch-icon" href="icon-192.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="特許法トレーナー">
+    <meta name="apple-mobile-web-app-title" content="条文○×トレーナー">
     <style>
         :root {
             --bg-color: #121212;
@@ -22,7 +22,8 @@
             --wrong-color: #ff4d4d;
             --choice-bg: #2a2a2a;
             --choice-hover: #3a3a3a;
-            --flash-bg: rgba(0, 173, 181, 0.95);
+            --flash-bg-correct: rgba(0, 173, 181, 0.95);
+            --flash-bg-retry: rgba(255, 77, 77, 0.9);
         }
 
         body {
@@ -36,7 +37,6 @@
             overflow: hidden;
         }
 
-        /* 左側：サイドバー */
         #sidebar {
             width: 340px;
             background-color: var(--panel-bg);
@@ -78,13 +78,12 @@
             margin-right: 10px;
         }
 
-        /* モード切り替えスタイル */
         .mode-selector {
             display: flex;
             background: #121212;
             border-radius: 6px;
             padding: 2px;
-            margin-bottom: 15px;
+            margin-bottom: 8px;
         }
 
         .mode-btn {
@@ -104,6 +103,12 @@
             color: #fff;
         }
 
+        .mode-desc {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
         #minimap-container {
             flex-grow: 1;
         }
@@ -121,14 +126,14 @@
 
         .minimap-list {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(6, 1fr);
             gap: 4px;
         }
 
         .minimap-item {
             font-size: 0.7rem;
             background: #151515;
-            padding: 5px 2px;
+            padding: 6px 2px;
             text-align: center;
             border-radius: 3px;
             color: var(--text-muted);
@@ -137,18 +142,13 @@
             overflow: hidden;
             text-overflow: ellipsis;
             border: 1px solid transparent;
+            position: relative;
         }
 
         .minimap-item.active {
             color: #aaa;
             border-color: #333;
-            cursor: pointer;
-        }
-
-        .minimap-item.focused {
-            border-color: var(--accent-color);
-            color: var(--accent-color);
-            background-color: rgba(0, 173, 181, 0.15);
+            cursor: default;
         }
 
         .minimap-item.correct {
@@ -158,7 +158,32 @@
             box-shadow: 0 0 8px rgba(255,255,255,0.7);
         }
 
-        /* 右側：メインパネル */
+        .minimap-item.mastered {
+            background-color: var(--accent-color) !important;
+            color: #fff !important;
+            font-weight: bold;
+            box-shadow: 0 0 10px rgba(0, 173, 181, 0.8);
+        }
+
+        .minimap-item .tooltip {
+            display: none;
+            position: absolute;
+            bottom: 110%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #000;
+            color: #fff;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            white-space: nowrap;
+            z-index: 20;
+            pointer-events: none;
+        }
+        .minimap-item:hover .tooltip {
+            display: block;
+        }
+
         #main-panel {
             flex-grow: 1;
             display: flex;
@@ -170,8 +195,9 @@
         }
 
         #quiz-box {
-            max-width: 600px;
+            max-width: 640px;
             width: 100%;
+            min-height: 360px;
             background: var(--panel-bg);
             padding: 35px;
             border-radius: 12px;
@@ -179,30 +205,33 @@
             text-align: center;
             box-sizing: border-box;
             position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
-        #question-display {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: #ffffff;
-            margin-bottom: 20px;
-            min-height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        #article-tag {
+            display: inline-block;
+            font-size: 0.75rem;
+            color: var(--accent-color);
+            border: 1px solid var(--accent-color);
+            border-radius: 12px;
+            padding: 3px 12px;
+            margin-bottom: 18px;
             letter-spacing: 0.5px;
         }
 
-        #summary-display {
-            font-size: 0.9rem;
-            line-height: 1.5;
-            color: #b0b0b0;
-            background: #151515;
-            padding: 12px 15px;
-            border-radius: 6px;
-            margin-bottom: 25px;
+        #question-display {
+            font-size: 1.35rem;
+            font-weight: bold;
+            color: #ffffff;
+            margin-bottom: 28px;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1.6;
             text-align: left;
-            border-left: 3px solid #444;
         }
 
         #choices-area {
@@ -216,12 +245,13 @@
             background-color: var(--choice-bg);
             border: 1px solid #3e3e3e;
             color: #fff;
-            font-size: 1.05rem;
-            padding: 16px 10px;
+            font-size: 1.2rem;
+            padding: 18px 10px;
             border-radius: 6px;
             cursor: pointer;
             transition: all 0.1s ease;
             outline: none;
+            font-weight: bold;
         }
 
         .choice-btn:hover {
@@ -233,57 +263,130 @@
             background-color: #fff !important;
             border-color: #fff !important;
             color: #000 !important;
-            font-weight: bold;
         }
 
         .choice-btn.wrong {
             background-color: transparent !important;
             border-color: var(--wrong-color) !important;
             color: var(--wrong-color) !important;
-            opacity: 0.4;
+            opacity: 0.5;
         }
 
-        /* 5秒フラッシュオーバーレイ */
+        #reason-check-area {
+            display: none;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #333;
+        }
+
+        #reason-prompt {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 14px;
+        }
+
+        #reason-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .reason-btn {
+            flex: 1;
+            max-width: 220px;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            cursor: pointer;
+            border: 1px solid #3e3e3e;
+            background: var(--choice-bg);
+            color: #fff;
+            transition: all 0.1s ease;
+        }
+
+        .reason-btn:hover {
+            background-color: var(--choice-hover);
+        }
+
+        .reason-btn.yes {
+            border-color: var(--accent-color);
+        }
+
+        .reason-btn.no {
+            border-color: var(--wrong-color);
+        }
+
         #flash-overlay {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: var(--flash-bg);
+            background-color: var(--flash-bg-correct);
             border-radius: 12px;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 20px;
+            padding: 25px;
             box-sizing: border-box;
             z-index: 10;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.1s ease-in-out;
+            transition: opacity 0.15s ease-in-out;
+            text-align: left;
         }
 
         #flash-overlay.show {
             opacity: 1;
+            pointer-events: auto;
         }
 
-        #flash-alias {
-            font-size: 1.2rem;
+        #flash-overlay.retry {
+            background-color: var(--flash-bg-retry);
+        }
+
+        #flash-status {
+            font-size: 1.1rem;
             font-weight: bold;
             color: #000;
             background: #fff;
-            padding: 4px 12px;
+            padding: 4px 14px;
             border-radius: 4px;
-            margin-bottom: 12px;
+            margin-bottom: 14px;
+            align-self: center;
         }
 
-        #flash-note {
-            font-size: 1.4rem;
+        #flash-explanation {
+            font-size: 1.05rem;
             font-weight: bold;
             color: #ffffff;
-            line-height: 1.4;
+            line-height: 1.6;
             text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+            margin-bottom: 14px;
+        }
+
+        #flash-source {
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.85);
+            margin-bottom: 18px;
+        }
+
+        #flash-next-btn {
+            align-self: center;
+            padding: 10px 28px;
+            border-radius: 20px;
+            border: 2px solid #fff;
+            background: transparent;
+            color: #fff;
+            font-weight: bold;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        #flash-next-btn:hover {
+            background: rgba(255,255,255,0.15);
         }
 
         #toast {
@@ -310,8 +413,9 @@
             body { flex-direction: column; overflow: auto; height: auto; }
             #sidebar { width: 100%; height: auto; border-right: none; border-bottom: 1px solid #2d2d2d; }
             #main-panel { padding: 15px 5px; }
-            #choices-area { grid-template-columns: 1fr; }
-            #flash-note { font-size: 1.1rem; }
+            #choices-area { grid-template-columns: 1fr 1fr; }
+            .minimap-list { grid-template-columns: repeat(8, 1fr); }
+            #quiz-box { min-height: 420px; padding: 25px 20px; }
         }
     </style>
 </head>
@@ -319,27 +423,17 @@
 
     <div id="sidebar">
         <div class="control-block">
-            <h2>学習モード</h2>
+            <h2>難易度モード</h2>
             <div class="mode-selector">
-                <div id="mode-alias-btn" class="mode-btn active" onclick="setMode('BY_ALIAS')">通称 ➔ 条文番号</div>
-                <div id="mode-article-btn" class="mode-btn" onclick="setMode('BY_ARTICLE')">条文番号 ➔ 通称</div>
+                <div id="mode-quick-btn" class="mode-btn active" onclick="setDifficulty('QUICK')">○×だけ</div>
+                <div id="mode-reason-btn" class="mode-btn" onclick="setDifficulty('REASON')">理由まで</div>
             </div>
+            <div class="mode-desc" id="mode-desc-text">○×を判定したらすぐ正解発表。サクサク回したいときに。</div>
         </div>
 
         <div class="control-block">
             <h2>章 フィルター</h2>
             <div id="chapter-filter-container"></div>
-        </div>
-
-        <div class="control-block">
-            <h2>重点登録</h2>
-            <label class="control-toggle"><input type="checkbox" id="focus-mode-toggle"> 登録した条文だけ出題する</label>
-            <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 4px;">ミニマップの条文名をタップで登録/解除</div>
-        </div>
-
-        <div class="control-block">
-            <h2>表示設定</h2>
-            <label class="control-toggle"><input type="checkbox" id="summary-toggle" checked> 条文のまとめ文を表示</label>
         </div>
 
         <div class="control-block">
@@ -349,34 +443,42 @@
             <div id="time-history-list" style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 10px;"></div>
             <button id="export-log-btn" style="width: 100%; padding: 8px; background: var(--accent-color); border: none; border-radius: 4px; color: #fff; font-size: 0.8rem; font-weight: bold; cursor: pointer;">ログをダウンロード(.md)</button>
         </div>
-        
-        <h2>条文ミニマップ</h2>
+
+        <h2>問題ミニマップ</h2>
         <div id="minimap-container"></div>
     </div>
 
     <div id="main-panel">
-        <div id="toast">🎉 クリア！</div>
-        
+        <div id="toast">🎉 章をクリア！</div>
+
         <div id="quiz-box">
             <div id="flash-overlay">
-                <div id="flash-alias">通称</div>
-                <div id="flash-note">使われ方フラッシュ</div>
+                <div id="flash-status">○</div>
+                <div id="flash-explanation">説明文がここに入ります。</div>
+                <div id="flash-source">根拠条文</div>
+                <button id="flash-next-btn" onclick="nextQuestion()">次の問題 →</button>
             </div>
 
+            <div id="article-tag">第1条</div>
             <div id="question-display">Loading...</div>
-            <div id="summary-display">条文の解説がここに表示されます。</div>
-            
+
             <div id="choices-area">
-                <button class="choice-btn" data-index="0">--</button>
-                <button class="choice-btn" data-index="1">--</button>
-                <button class="choice-btn" data-index="2">--</button>
-                <button class="choice-btn" data-index="3">--</button>
+                <button class="choice-btn" data-value="true">○ 正しい</button>
+                <button class="choice-btn" data-value="false">× 誤り</button>
+            </div>
+
+            <div id="reason-check-area">
+                <div id="reason-prompt">「どこがどう正しい/誤りか」、根拠条文まで含めて理由を言えましたか？</div>
+                <div id="reason-buttons">
+                    <button class="reason-btn yes" onclick="confirmReason(true)">言えた</button>
+                    <button class="reason-btn no" onclick="confirmReason(false)">言えなかった</button>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        // 音声フィードバック（Web Audio API）
+        // ===== 音声フィードバック（Web Audio API） =====
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         function playSound(type) {
             if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -401,188 +503,128 @@
             }
         }
 
-        function formatArticleName(artStr) {
-            const str = String(artStr);
-            if (str.includes('_')) {
-                const parts = str.split('_');
-                return `${parts[0]}条の${parts[1]}`;
-            }
-            return `${str}条`;
+        // sourceやarticleの先頭に既に「第」があればそのまま、なければ付与する
+        function formatSourceLabel(question) {
+            const raw = question.source || question.article || '';
+            const str = String(raw);
+            return str.startsWith('第') ? str : `第${str}`;
         }
 
-        let patentLawData = []; // 外部JSONから読み込む
-        let currentMode = "BY_ALIAS";
-        let activeChapters = new Set(); // initGame()内でデータから動的に決定される
-        let correctArticles = new Set();
-        let focusedArticles = new Set(JSON.parse(localStorage.getItem('focusedArticles') || '[]'));
-        let focusModeOnly = false;
+        // ===== 状態管理 =====
+        let stepData = [];
+        let difficulty = "QUICK";
+        let activeChapters = new Set();
+        let masteredIds = new Set(); // セッション内(リロードでリセット)のみで保持
+        let correctOnceIds = new Set();
         let currentQuestion = null;
         let questionQueue = [];
-        let wrongAttempted = false;
-        let showSummary = true;
+        let pendingJudgement = null;
 
-        function saveFocusedArticles() {
-            localStorage.setItem('focusedArticles', JSON.stringify([...focusedArticles]));
-        }
-
-        // ===== 表示設定の永続化（章フィルター・重点登録モード・まとめ文表示） =====
-        function saveUiSettings() {
-            localStorage.setItem('uiSettings', JSON.stringify({
-                activeChapters: [...activeChapters],
-                knownChapters: [...new Set(patentLawData.map(d => d.chapter))],
-                focusModeOnly: focusModeOnly,
-                showSummary: showSummary
-            }));
-        }
-
-        function loadUiSettings() {
-            try {
-                const raw = localStorage.getItem('uiSettings');
-                if (!raw) return null;
-                return JSON.parse(raw);
-            } catch (e) {
-                return null;
-            }
-        }
-
-        // UI要素
+        const articleTag = document.getElementById('article-tag');
         const questionDisplay = document.getElementById('question-display');
-        const summaryDisplay = document.getElementById('summary-display');
         const choicesArea = document.getElementById('choices-area');
         const choiceBtns = document.querySelectorAll('.choice-btn');
+        const reasonCheckArea = document.getElementById('reason-check-area');
         const minimapContainer = document.getElementById('minimap-container');
+        const chapterFilterContainer = document.getElementById('chapter-filter-container');
         const toast = document.getElementById('toast');
-        const summaryToggle = document.getElementById('summary-toggle');
         const flashOverlay = document.getElementById('flash-overlay');
-        const flashAlias = document.getElementById('flash-alias');
-        const flashNote = document.getElementById('flash-note');
+        const flashStatus = document.getElementById('flash-status');
+        const flashExplanation = document.getElementById('flash-explanation');
+        const flashSource = document.getElementById('flash-source');
+        const modeDescText = document.getElementById('mode-desc-text');
 
-        // 外部JSONデータの読み込み
+        const MODE_DESCRIPTIONS = {
+            QUICK: "○×を判定したらすぐ正解発表。サクサク回したいときに。",
+            REASON: "○×判定の後、理由（どこが・なぜ）を自分で言えたか確認。言えなければ再挑戦扱いに。"
+        };
+
         async function loadData() {
             try {
-                const response = await fetch('patent_data.json');
+                const response = await fetch('step2_data.json');
                 if (!response.ok) throw new Error('JSONの読み込みに失敗しました');
-                patentLawData = await response.json();
+                stepData = await response.json();
+                activeChapters = new Set([...new Set(stepData.map(d => d.chapter))]);
                 initGame();
             } catch (error) {
                 questionDisplay.innerText = "データ読み込みエラー";
-                summaryDisplay.innerText = "同じフォルダに 'patent_data.json' が正しく配置されているか確認してください。";
                 choicesArea.style.display = 'none';
                 console.error(error);
             }
         }
 
-        function setMode(mode) {
-            currentMode = mode;
-            document.getElementById('mode-alias-btn').classList.toggle('active', mode === 'BY_ALIAS');
-            document.getElementById('mode-article-btn').classList.toggle('active', mode === 'BY_ARTICLE');
+        function setDifficulty(mode) {
+            difficulty = mode;
+            document.getElementById('mode-quick-btn').classList.toggle('active', mode === 'QUICK');
+            document.getElementById('mode-reason-btn').classList.toggle('active', mode === 'REASON');
+            modeDescText.innerText = MODE_DESCRIPTIONS[mode];
             generateQueue();
             nextQuestion();
         }
 
-        function renderChapterFilter() {
-            const container = document.getElementById('chapter-filter-container');
-            container.innerHTML = '';
-            const chapters = [...new Set(patentLawData.map(d => d.chapter))].sort((a, b) => a - b);
-            chapters.forEach(ch => {
-                const chName = patentLawData.find(d => d.chapter === ch).chapterName;
-                const label = document.createElement('label');
-                label.className = 'control-toggle';
-                const input = document.createElement('input');
-                input.type = 'checkbox';
-                input.checked = activeChapters.has(ch);
-                input.addEventListener('change', (e) => {
-                    if (e.target.checked) activeChapters.add(ch); else activeChapters.delete(ch);
-                    saveUiSettings();
-                    renderMinimap(); generateQueue(); nextQuestion();
-                });
-                label.appendChild(input);
-                label.appendChild(document.createTextNode(' ' + chName));
-                container.appendChild(label);
-            });
-        }
-
         function initGame() {
-            // 章フィルターの初期状態を決める（データにある章 × 保存済みの設定）
-            const allChapters = [...new Set(patentLawData.map(d => d.chapter))].sort((a, b) => a - b);
-            const saved = loadUiSettings();
-            if (saved && Array.isArray(saved.activeChapters)) {
-                const savedActive = new Set(saved.activeChapters);
-                const knownBefore = new Set(saved.knownChapters || saved.activeChapters);
-                // 既知の章は保存状態を踏襲、前回保存時になかった新しい章はデフォルトON
-                activeChapters = new Set(allChapters.filter(ch => knownBefore.has(ch) ? savedActive.has(ch) : true));
-            } else {
-                activeChapters = new Set(allChapters);
-            }
-
-            if (saved && typeof saved.focusModeOnly === 'boolean') {
-                focusModeOnly = saved.focusModeOnly;
-                document.getElementById('focus-mode-toggle').checked = focusModeOnly;
-            }
-            if (saved && typeof saved.showSummary === 'boolean') {
-                showSummary = saved.showSummary;
-                summaryToggle.checked = showSummary;
-                summaryDisplay.style.display = showSummary ? 'block' : 'none';
-            }
-
             renderChapterFilter();
             renderMinimap();
             generateQueue();
             nextQuestion();
 
-            document.getElementById('focus-mode-toggle').addEventListener('change', (e) => {
-                focusModeOnly = e.target.checked;
-                saveUiSettings();
-                generateQueue(); nextQuestion();
-            });
-
-            // 表示設定のイベント
-            summaryToggle.addEventListener('change', (e) => {
-                showSummary = e.target.checked;
-                summaryDisplay.style.display = showSummary ? 'block' : 'none';
-                saveUiSettings();
-            });
-
-            // 選択肢ボタンのイベント
             choiceBtns.forEach(btn => {
-                btn.addEventListener('click', () => checkAnswer(btn));
+                btn.addEventListener('click', () => handleJudgement(btn));
+            });
+        }
+
+        function renderChapterFilter() {
+            chapterFilterContainer.innerHTML = '';
+            const chapters = [...new Set(stepData.map(d => d.chapter))].sort((a, b) => a - b);
+            chapters.forEach(ch => {
+                const chName = stepData.find(d => d.chapter === ch).chapterName;
+                const label = document.createElement('label');
+                label.className = 'control-toggle';
+                const input = document.createElement('input');
+                input.type = 'checkbox';
+                input.checked = true;
+                input.addEventListener('change', (e) => {
+                    if (e.target.checked) activeChapters.add(ch); else activeChapters.delete(ch);
+                    renderMinimap(); generateQueue(); nextQuestion();
+                });
+                label.appendChild(input);
+                label.appendChild(document.createTextNode(chName));
+                chapterFilterContainer.appendChild(label);
             });
         }
 
         function renderMinimap() {
             minimapContainer.innerHTML = '';
-            const chapters = [...new Set(patentLawData.map(d => d.chapter))].sort((a, b) => a - b);
+            const chapters = [...new Set(stepData.map(d => d.chapter))].sort((a, b) => a - b);
             chapters.forEach(ch => {
                 if (!activeChapters.has(ch)) return;
-                const chData = patentLawData.filter(d => d.chapter === ch);
+                const chData = stepData.filter(d => d.chapter === ch);
                 const chBox = document.createElement('div');
                 chBox.className = 'minimap-chapter';
                 chBox.appendChild(Object.assign(document.createElement('div'), {
-                    className: 'minimap-chapter-title', 
+                    className: 'minimap-chapter-title',
                     innerText: chData[0].chapterName
                 }));
-                
+
                 const list = document.createElement('div');
                 list.className = 'minimap-list';
-                
-                chData.forEach(item => {
+
+                chData.forEach((item, idx) => {
                     const el = document.createElement('div');
                     el.className = 'minimap-item active';
-                    el.id = `map-art-${item.article}`;
-                    el.innerText = formatArticleName(item.article);
-                    if (focusedArticles.has(item.article)) el.classList.add('focused');
-                    if (correctArticles.has(item.article)) el.classList.add('correct');
-                    el.addEventListener('click', () => {
-                        if (focusedArticles.has(item.article)) {
-                            focusedArticles.delete(item.article);
-                            el.classList.remove('focused');
-                        } else {
-                            focusedArticles.add(item.article);
-                            el.classList.add('focused');
-                        }
-                        saveFocusedArticles();
-                        if (focusModeOnly) { generateQueue(); }
-                    });
+                    el.id = `map-q-${item.id}`;
+                    el.innerText = String(idx + 1);
+
+                    const tooltip = document.createElement('div');
+                    tooltip.className = 'tooltip';
+                    tooltip.innerText = `第${item.source || item.article}`;
+                    el.appendChild(tooltip);
+
+                    if (masteredIds.has(item.id)) {
+                        el.classList.add('mastered');
+                    } else if (correctOnceIds.has(item.id)) {
+                        el.classList.add('correct');
+                    }
                     list.appendChild(el);
                 });
                 chBox.appendChild(list);
@@ -591,12 +633,14 @@
         }
 
         function generateQueue() {
-            const availableData = patentLawData.filter(d =>
-                activeChapters.has(d.chapter) &&
-                !correctArticles.has(d.article) &&
-                (!focusModeOnly || focusedArticles.has(d.article))
-            );
-            // シャッフル
+            let availableData = stepData.filter(d => activeChapters.has(d.chapter));
+
+            if (difficulty === 'QUICK') {
+                availableData = availableData.filter(d => !correctOnceIds.has(d.id));
+            } else if (difficulty === 'REASON') {
+                availableData = availableData.filter(d => !masteredIds.has(d.id));
+            }
+
             for (let i = availableData.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [availableData[i], availableData[j]] = [availableData[j], availableData[i]];
@@ -604,21 +648,27 @@
             questionQueue = availableData;
         }
 
-        function nextQuestion() {
-            wrongAttempted = false;
+        function resetButtonsUI() {
             choiceBtns.forEach(btn => { btn.className = 'choice-btn'; btn.disabled = false; });
+            reasonCheckArea.style.display = 'none';
+            choicesArea.style.display = 'grid';
             flashOverlay.classList.remove('show');
+            flashOverlay.classList.remove('retry');
+
+            // オーバーレイ表示中にスクロール位置がズレることがあるため、
+            // 次の問題に進むタイミングで画面内に戻す
+            const quizBox = document.getElementById('quiz-box');
+            if (quizBox) {
+                quizBox.scrollIntoView({ block: 'center', behavior: 'auto' });
+            }
+        }
+
+        function nextQuestion() {
+            resetButtonsUI();
+            pendingJudgement = null;
 
             if (activeChapters.size === 0) {
                 questionDisplay.innerText = "章を選択してください。";
-                summaryDisplay.innerText = "";
-                choicesArea.style.display = 'none';
-                return;
-            }
-
-            if (focusModeOnly && focusedArticles.size === 0) {
-                questionDisplay.innerText = "重点条文が登録されていません。";
-                summaryDisplay.innerText = "ミニマップの条文名をタップして登録してください。";
                 choicesArea.style.display = 'none';
                 return;
             }
@@ -626,96 +676,96 @@
             if (questionQueue.length === 0) {
                 generateQueue();
                 if (questionQueue.length === 0) {
-                    questionDisplay.innerText = "すべての条文をクリアしました！";
-                    summaryDisplay.innerText = "フィルターを再確認するか、リロードしてください。";
+                    questionDisplay.innerText = "この章はすべて習熟済みです！🎉";
                     choicesArea.style.display = 'none';
                     return;
                 }
             }
 
-            choicesArea.style.display = 'grid';
             currentQuestion = questionQueue.shift();
-
-            // モードに応じた問題文の表示
-            if (currentMode === "BY_ALIAS") {
-                questionDisplay.innerText = currentQuestion.alias;
-            } else {
-                questionDisplay.innerText = formatArticleName(currentQuestion.article);
-            }
-
-            summaryDisplay.innerText = currentQuestion.summary;
-            summaryDisplay.style.display = showSummary ? 'block' : 'none';
-
-            renderChoices();
+            articleTag.innerText = `根拠：${formatSourceLabel(currentQuestion)}`;
+            questionDisplay.innerText = currentQuestion.statement;
         }
 
-        function renderChoices() {
-            const isAliasMode = (currentMode === "BY_ALIAS");
-            const correctVal = isAliasMode ? currentQuestion.article : currentQuestion.alias;
-            
-            // ダミー選択肢のプール作成（章フィルターと連動させる）
-            let dummyPool = patentLawData
-                .filter(d => d.article !== currentQuestion.article && activeChapters.has(d.chapter))
-                .map(d => isAliasMode ? d.article : d.alias);
-            
-            // 重複排除
-            dummyPool = [...new Set(dummyPool)];
-            
-            // ランダムに3つ抽出
-            for (let i = dummyPool.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [dummyPool[i], dummyPool[j]] = [dummyPool[j], dummyPool[i]];
-            }
-            const chosenDummies = dummyPool.slice(0, 3);
-            
-            // 正解を混ぜてシャッフル
-            let finalChoices = [correctVal, ...chosenDummies];
-            for (let i = finalChoices.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [finalChoices[i], finalChoices[j]] = [finalChoices[j], finalChoices[i]];
-            }
-
-            // ボタンへ割り当て
-            choiceBtns.forEach((btn, index) => {
-                const val = finalChoices[index];
-                btn.innerText = isAliasMode ? formatArticleName(val) : val;
-                btn.dataset.value = val;
-            });
-        }
-
-        function checkAnswer(selectedBtn) {
+        function handleJudgement(selectedBtn) {
             if (!currentQuestion) return;
-            const isAliasMode = (currentMode === "BY_ALIAS");
-            const selectedVal = selectedBtn.dataset.value;
-            const correctVal = isAliasMode ? currentQuestion.article : currentQuestion.alias;
-            
-            if (selectedVal === correctVal) {
-                selectedBtn.classList.add('correct');
-                playSound('correct');
-                
-                // ミニマップの進行度更新
-                if (!wrongAttempted) {
-                    correctArticles.add(currentQuestion.article);
-                    const mapItem = document.getElementById(`map-art-${currentQuestion.article}`);
-                    if (mapItem) mapItem.classList.add('correct');
-                } else {
-                    // 間違えていた場合はキューに戻す
-                    questionQueue.push(currentQuestion);
-                }
+            const selectedVal = selectedBtn.dataset.value === 'true';
+            const correctVal = currentQuestion.isCorrect;
+            const isRight = (selectedVal === correctVal);
 
-                // フラッシュと解説は summary を共用
-                flashAlias.innerText = currentQuestion.alias;
-                flashNote.innerText = currentQuestion.summary || "補足情報なし";
-                flashOverlay.classList.add('show');
+            choiceBtns.forEach(btn => { btn.disabled = true; });
+            selectedBtn.classList.add(isRight ? 'correct' : 'wrong');
+            playSound(isRight ? 'correct' : 'wrong');
 
-                // 0秒後に自動で次の問題へ
-                setTimeout(nextQuestion, 100);
+            pendingJudgement = isRight;
 
+            if (difficulty === 'QUICK') {
+                finalizeQuestion(isRight, /*fullyCleared=*/ isRight);
             } else {
-                wrongAttempted = true;
-                selectedBtn.classList.add('wrong');
-                selectedBtn.disabled = true;
-                playSound('wrong');
+                choicesArea.style.display = 'none';
+                reasonCheckArea.style.display = 'block';
+            }
+        }
+
+        function confirmReason(reasonOk) {
+            const judgedRight = pendingJudgement === true;
+            finalizeQuestion(judgedRight, judgedRight && reasonOk);
+        }
+
+        function finalizeQuestion(judgedRight, fullyCleared) {
+            reasonCheckArea.style.display = 'none';
+            const mapItem = document.getElementById(`map-q-${currentQuestion.id}`);
+
+            if (difficulty === 'QUICK') {
+                // ○×だけモード：判定が合っていれば「correct」表示のみ。masteredIdsは変更しない
+                if (judgedRight) {
+                    correctOnceIds.add(currentQuestion.id);
+                    if (mapItem && !masteredIds.has(currentQuestion.id)) mapItem.classList.add('correct');
+                    checkChapterClearQuick();
+                }
+            } else {
+                // 理由までモード：判定+理由の両方が揃って初めてmastered
+                if (fullyCleared) {
+                    correctOnceIds.add(currentQuestion.id);
+                    masteredIds.add(currentQuestion.id);
+                    if (mapItem) { mapItem.classList.remove('correct'); mapItem.classList.add('mastered'); }
+                    checkChapterClear();
+                } else {
+                    questionQueue.push(currentQuestion);
+                    masteredIds.delete(currentQuestion.id);
+                    if (mapItem) mapItem.classList.remove('mastered');
+                }
+            }
+
+            flashOverlay.classList.toggle('retry', !fullyCleared);
+            flashStatus.innerText = currentQuestion.isCorrect ? '○ 正しい' : '× 誤り';
+            flashExplanation.innerText = currentQuestion.isCorrect
+                ? (currentQuestion.explanation || "この記述は条文の内容と一致しています。")
+                : (currentQuestion.explanation || "誤りの説明なし");
+            flashSource.innerText = `根拠：${formatSourceLabel(currentQuestion)}`;
+            choicesArea.style.display = 'none';
+            flashOverlay.classList.add('show');
+        }
+
+        function checkChapterClearQuick() {
+            const ch = currentQuestion.chapter;
+            const chIds = stepData.filter(d => d.chapter === ch && activeChapters.has(d.chapter)).map(d => d.id);
+            const allCorrect = chIds.every(id => correctOnceIds.has(id));
+            if (allCorrect) {
+                toast.innerText = `🎉 ${currentQuestion.chapterName} クリア！`;
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 2500);
+            }
+        }
+
+        function checkChapterClear() {
+            const ch = currentQuestion.chapter;
+            const chIds = stepData.filter(d => d.chapter === ch).map(d => d.id);
+            const allMastered = chIds.every(id => masteredIds.has(id));
+            if (allMastered) {
+                toast.innerText = `🎉 ${currentQuestion.chapterName} クリア！`;
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 2500);
             }
         }
 
@@ -726,13 +776,13 @@
         }
 
         function addElapsedTime(ms) {
-            const key = 'studyTime_' + todayKey();
+            const key = 'step2_studyTime_' + todayKey();
             const prev = parseInt(localStorage.getItem(key) || '0', 10);
             localStorage.setItem(key, String(prev + ms));
         }
 
         function getMinutesForDate(dateStr) {
-            const ms = parseInt(localStorage.getItem('studyTime_' + dateStr) || '0', 10);
+            const ms = parseInt(localStorage.getItem('step2_studyTime_' + dateStr) || '0', 10);
             return ms / 60000;
         }
 
@@ -754,7 +804,7 @@
         }
 
         function updateTimeDisplay() {
-            const todayMs = parseInt(localStorage.getItem('studyTime_' + todayKey()) || '0', 10);
+            const todayMs = parseInt(localStorage.getItem('step2_studyTime_' + todayKey()) || '0', 10);
             const liveMs = trackingStart !== null ? (Date.now() - trackingStart) : 0;
             const totalMin = (todayMs + liveMs) / 60000;
             const display = document.getElementById('today-time-display');
@@ -777,7 +827,7 @@
 
         function getMondayOfWeek(dateStr) {
             const d = new Date(dateStr + 'T00:00:00');
-            const day = d.getDay(); // 0=日, 1=月, ...
+            const day = d.getDay();
             const diff = (day === 0 ? -6 : 1 - day);
             d.setDate(d.getDate() + diff);
             return todayKey(d);
@@ -787,8 +837,8 @@
             const entries = [];
             for (let i = 0; i < localStorage.length; i++) {
                 const key = localStorage.key(i);
-                if (key && key.startsWith('studyTime_')) {
-                    const dateStr = key.slice('studyTime_'.length);
+                if (key && key.startsWith('step2_studyTime_')) {
+                    const dateStr = key.slice('step2_studyTime_'.length);
                     const ms = parseInt(localStorage.getItem(key) || '0', 10);
                     entries.push({ date: dateStr, minutes: ms / 60000 });
                 }
@@ -812,7 +862,7 @@
 
             const totalMinutes = entries.reduce((sum, e) => sum + e.minutes, 0);
 
-            let md = `# 特許法トレーナー 学習時間ログ\n\n`;
+            let md = `# 特許法トレーナー(ステップ2) 学習時間ログ\n\n`;
             md += `エクスポート日時: ${new Date().toLocaleString('ja-JP')}\n\n`;
             md += `合計学習時間: ${totalMinutes.toFixed(1)}分（${entries.length}日分）\n\n`;
 
@@ -835,14 +885,13 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `studytime_log_${todayKey()}.md`;
+            a.download = `step2_studytime_log_${todayKey()}.md`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
         }
 
-        // タブ切り替え・ウィンドウのフォーカス変化を検知して計測をON/OFF
         document.addEventListener('visibilitychange', () => {
             if (document.hidden) stopTracking();
             else if (isPageActive()) startTracking();
@@ -852,7 +901,6 @@
         window.addEventListener('pagehide', stopTracking);
         window.addEventListener('beforeunload', stopTracking);
 
-        // 5秒ごとに保存・表示を更新（強制終了時のデータ消失を防ぐ）
         setInterval(() => {
             if (trackingStart !== null) {
                 stopTracking();
@@ -869,14 +917,12 @@
         const exportBtn = document.getElementById('export-log-btn');
         if (exportBtn) exportBtn.addEventListener('click', exportTimeLogAsMarkdown);
 
-        // ===== Service Worker 登録（インストール可能化・オフライン対応） =====
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('service-worker.js').catch(console.error);
             });
         }
 
-        // 起動時にロードを開始
         window.onload = loadData;
     </script>
 </body>
